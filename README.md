@@ -1,7 +1,7 @@
 # bamazon
 Amazon-like CLI storefront Using MYSQL and NodeJS
 
-Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
+Running the bamazonCustomer file will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
 
 1. The app then prompt users with two messages.
 
