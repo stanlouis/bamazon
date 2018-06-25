@@ -1,21 +1,22 @@
-var mysql = require("mysql");
-var inquirer = require("inquirer");
+const mysql = require('mysql');
+const inquirer = require('inquirer');
+require("dotenv").config();
 
-var connection = mysql.createConnection({
-  host: "localhost",
+const connection = mysql.createConnection({
+  host: 'localhost',
 
   // Your port; if not 3306
   port: 3306,
 
   // Your username
-  user: "root",
+  user: 'root',
 
   // Your password
-  password: "Wu86z!6FPQ$x",
-  database: "bamazonDB"
+  password: process.env.DB_PASS,
+  database: 'bamazonDB',
 });
 
-connection.connect(function(err) {
+connection.connect(err => {
   if (err) throw err;
   taskChoice();
 });
@@ -33,7 +34,7 @@ function taskChoice() {
         "Add New Product"
       ]
     })
-    .then(function(answer) {
+    .then(answer => {
       switch (answer.action) {
         case "View Product for Sale":
           productsList();
@@ -55,20 +56,13 @@ function taskChoice() {
 }
 
 function productsList() {
-  connection.query("SELECT * FROM products", function(err, res) {
+  connection.query("SELECT * FROM products", (err, res) => {
     if (err) throw err;
     console.log("---Our list of products---");
 
     for (var i = 0; i < res.length; i++) {
       console.log(
-        "Item_id: " +
-          res[i].item_id +
-          " || Product Name: " +
-          res[i].product_name +
-          " || Price: " +
-          res[i].price +
-          " || Stock Quantity: " +
-          res[i].stock_quantity
+        `Item_id: ${res[i].item_id} || Product Name: ${res[i].product_name} || Price: ${res[i].price} || Stock Quantity: ${res[i].stock_quantity}`
       );
     }
     console.log("***********************************************************");
@@ -77,22 +71,17 @@ function productsList() {
 }
 
 function lowInventorySearch() {
-  var query =
+  var lowInventoryQuery =
     "SELECT item_id, product_name, stock_quantity FROM products" +
     " WHERE" +
     " stock_quantity < 5";
-  connection.query(query, function(err, res) {
+  connection.query(lowInventoryQuery, function(err, res) {
     if (err) throw err;
-    console.log("---Our list of products---");
+    console.log("---Our low inventory list---");
 
     for (var i = 0; i < res.length; i++) {
       console.log(
-        "Item_id: " +
-          res[i].item_id +
-          " || Product Name: " +
-          res[i].product_name +
-          " || Stock Quantity: " +
-          res[i].stock_quantity
+        `Item_id: ${res[i].item_id} || Product Name: ${res[i].product_name} || Stock Quantity: ${res[i].stock_quantity}`
       );
     }
     console.log("***********************************************************");
@@ -124,14 +113,14 @@ function addToInventory() {
         validate: validateEntry
       }
     ])
-    .then(function(input) {
+    .then(input => {
       var item = input.item_id;
-      var quantityToAdd = input.quantity;
+      var quantityToAdd = parseInt(input.quantity);
       console.log("quantityToAdd", quantityToAdd);
 
       var query = "SELECT stock_quantity FROM products WHERE?";
 
-      connection.query(query, { item_id: item }, function(err, res) {
+      connection.query(query, { item_id: item }, (err, res) => {
         if (err) throw err;
         var itemId = res[0].item_id;
         var quantityRemaining = res[0].stock_quantity;
@@ -152,11 +141,11 @@ function addToInventory() {
                 item_id: item
               }
             ],
-            function(error) {
-              if (error) throw err;
-              console.log("Quantity successfully updated!");
-              taskChoice();
-            }
+              error => {
+                if (error) throw err;
+                console.log("Quantity successfully updated!");
+                taskChoice();
+              }
           );
         }
       });
@@ -189,7 +178,7 @@ function addNewProduct() {
         validate: validateEntry
       }
     ])
-    .then(function(input) {
+    .then(input => {
       connection.query(
         "INSERT INTO products SET ?",
         {
@@ -198,8 +187,9 @@ function addNewProduct() {
           price: input.price,
           stock_quantity: input.stock_quantity
         },
-        function(err, res) {
-          console.log(res.affectedRows + "products updated!\n");
+          (err, res) => {
+          console.log(`${res.affectedRows}products updated!
+`);
           taskChoice();
         }
       );
