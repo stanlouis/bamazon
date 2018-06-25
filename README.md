@@ -15,3 +15,5 @@ Running this application will first display all of the items available for sale.
 3. However, if store _does_ have enough of the product, the app should fulfill the customer's order.
    * This means updating the SQL database to reflect the remaining quantity.
    * Once the update goes through, show the customer the total cost of their purchase.
+   
+## demo
